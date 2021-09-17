@@ -27,7 +27,38 @@ def hello_there(name = None):
 def get_data():
     return app.send_static_file("data.json")
 
-    
+@app.route("/api/account/<accountid>")
+def getAccount(accountid):     
+    # account = {"AccountId": account_id}
+    cursor = conn.cursor()    
+    cursor.execute(f"Select * from dbo.Accounts where AccountID = ?", accountid)
+    result = cursor.fetchone()  
+    cursor.close()
+
+    if result is not None and len(result) > 0:
+        return render_template("account.html", accountId=result[0], email=result[3])
+    else:
+        return render_template("account.html")
+
+
+@app.route("/api/accounts")
+def getAccounts():     
+    # account = {"AccountId": account_id}
+    cursor = conn.cursor()    
+    cursor.execute(f"Select top 10 * from dbo.Accounts order by AccountID desc")
+    results = cursor.fetchall()    
+    account_response = {}
+    index = 0
+    for account in results:
+        account_response[index] = {'AccountId':account[0], 'Email':account[3]}
+        index = index + 1
+    cursor.close()
+
+    if results is not None and len(results) > 0:
+        return render_template("account.html", accounts=account_response)
+    else:
+        return render_template("account.html")
+
 
 # Setup Flask Restful framework
 api = Api(app)
@@ -68,23 +99,9 @@ class Accounts(Resource):
 
         return account_response, 200
 
-    
-class AccountsJson(Resource):
-    def get(self):     
-        cursor = conn.cursor()    
-        cursor.execute(f"Select top 10 * from dbo.Accounts order by AccountID desc")
-        results = cursor.fetchall()
-        cursor.close()
-        account_response = {}
-        index = 0
-        for account in results:
-            account_response[index] = {'AccountId':json.dumps(account[0]), 'Email':json.dumps(account[3])}
-            index = index + 1
 
-        return account_response, 200
 
 
 # Create API route to defined Customer class
-api.add_resource(AccountsJson, '/accountsjson')
 api.add_resource(Accounts, '/accounts')
 api.add_resource(Account, '/account', '/account/<account_id>')

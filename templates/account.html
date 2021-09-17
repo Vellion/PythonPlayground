@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}
+Account WoofWoof
+{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='site.css')}}" />
+
+    <head>
+        <meta charset="utf-8" />
+        <title>Hello, Flask</title>
+    </head>
+    <body>
+        Here's the list of the top 10 accounts 
+        {%if email %}
+        <span class="message">Hello there, {{ email }}!</span> your accountid is {{ accountId }}.
+        {% endif %}
+        {%if accountId %}
+            <span class="message">What's your email? Provide accountid after /api/account/ in the URL.</span>
+        {% endif %}
+        {%if accounts %}
+        <span class="message">{{ accounts }}
+        </span>
+        {% endif %}
+
+    </body>
+</html>
+{% endblock %}
+
