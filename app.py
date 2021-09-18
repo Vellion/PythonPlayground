@@ -22,11 +22,8 @@ def contact():
 def hello_there(name = None):
     return render_template("hello_there.html", name=name, date=datetime.now())
 
-@app.route("/api/data")
-def get_data():
-    return app.send_static_file("data.json")
 
-@app.route("/api/account/<accountid>")
+@app.route("/accounts/<accountid>")
 def getAccount(accountid):     
     # account = {"AccountId": account_id}
     cursor = conn.cursor()    
@@ -35,12 +32,12 @@ def getAccount(accountid):
     cursor.close()
 
     if result is not None and len(result) > 0:
-        return render_template("account.html", accountId=result[0], email=result[3])
+        return render_template("accounts.html", accountId=result[0], email=result[3])
     else:
-        return render_template("account.html")
+        return render_template("accounts.html")
 
 
-@app.route("/api/accounts")
+@app.route("/accounts")
 def getAccounts():     
     # account = {"AccountId": account_id}
     cursor = conn.cursor()    
@@ -54,10 +51,14 @@ def getAccounts():
     cursor.close()
 
     if results is not None and len(results) > 0:
-        return render_template("account.html", accounts=account_response)
+        return render_template("accounts.html", accounts=account_response)
     else:
-        return render_template("account.html")
+        return render_template("accounts.html")
 
+
+@app.route("/api/data")
+def get_data():
+    return app.send_static_file("data.json")
 
 # Setup Flask Restful framework
 api = Api(app)
@@ -65,5 +66,5 @@ parser = reqparse.RequestParser()
 parser.add_argument('Accounts')
 
 # Create API route to defined Customer class
-api.add_resource(Accounts, '/accounts')
-api.add_resource(Account, '/account', '/account/<account_id>')
+api.add_resource(Accounts, '/api/accounts')
+api.add_resource(Account, '/api/accounts', '/api/account/<account_id>')
