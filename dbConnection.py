@@ -1,13 +1,6 @@
 from flask import Flask
-from flask_restful import reqparse, Api, Resource
+from flask_restful import Resource
 import pyodbc
-
-app = Flask("FlaskAPI")
-
-# Setup Flask Restful framework
-api = Api(app)
-parser = reqparse.RequestParser()
-parser.add_argument('Accounts')
 
 driver = 'ODBC Driver 17 for SQL Server'
 db_connection_string = f'DRIVER={driver};SERVER=tcp:eon-sb.database.windows.net,1433;' \
@@ -43,10 +36,4 @@ class Accounts(Resource):
 
         return account_response, 200
 
-# Create API route to defined Customer class
-api.add_resource(Accounts, '/accounts')
-api.add_resource(Account, '/account', '/account/<account_id>')
 
-# Start App
-if __name__ == '__main__':
-    app.run()
