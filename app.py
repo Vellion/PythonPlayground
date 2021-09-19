@@ -60,6 +60,10 @@ def getAccounts():
 def get_data():
     return app.send_static_file("data.json")
 
+@app.route("/api/genericAccounts")
+def get_generic_accounts():
+    return getGenericAccounts()
+
 # Setup Flask Restful framework
 api = Api(app)
 parser = reqparse.RequestParser()
@@ -67,4 +71,4 @@ parser.add_argument('Accounts')
 
 # Create API route to defined Customer class
 api.add_resource(Accounts, '/api/accounts')
-api.add_resource(Account, '/api/accounts', '/api/account/<account_id>')
+api.add_resource(Account, '/api/account', '/api/account/<account_id>')
