@@ -1,6 +1,6 @@
-from flask import Flask
+from types import MethodType
+from flask import Flask, request, render_template
 from datetime import datetime
-from flask import render_template
 from flask_restful import reqparse, Api, Resource
 from dbConnection import *
 
@@ -25,21 +25,19 @@ def hello_there(name = None):
 
 @app.route("/accounts/<accountid>")
 def getAccount(accountid):     
-    # account = {"AccountId": account_id}
     cursor = conn.cursor()    
     cursor.execute(f"Select * from dbo.Accounts where AccountID = ?", accountid)
     result = cursor.fetchone()  
     cursor.close()
-
     if result is not None and len(result) > 0:
         return render_template("accounts.html", accountId=result[0], email=result[3])
     else:
         return render_template("accounts.html")
 
 
+
 @app.route("/accounts")
 def getAccounts():     
-    # account = {"AccountId": account_id}
     cursor = conn.cursor()    
     cursor.execute(f"Select top 10 * from dbo.Accounts order by AccountID desc")
     results = cursor.fetchall()    
@@ -59,6 +57,24 @@ def getAccounts():
 @app.route("/api/data")
 def get_data():
     return app.send_static_file("data.json")
+
+
+@app.route("/api/updateaccount/<accountid>", methods = ['POST'])
+def updateAccount(accountid):  
+    email = request.args["email"]
+    cursor = conn.cursor()    
+    cursor.execute(f"Update dbo.Accounts Set Email = ? where AccountID = ?", email, accountid)
+    cursor.close()
+    return "success"
+    
+@app.route("/api/updateaccountjson/<accountid>", methods = ['POST'])
+def updateAccountJson(accountid):  
+    data = request.get_json()
+    email = data.get('email', '')
+    cursor = conn.cursor()    
+    cursor.execute(f"Update dbo.Accounts Set Email = ? where AccountID = ?", email, accountid)
+    cursor.close()
+    return "success"
 
 # Setup Flask Restful framework
 api = Api(app)
