@@ -61,19 +61,25 @@ def get_data():
 
 @app.route("/api/updateaccount/<accountid>", methods = ['POST'])
 def updateAccount(accountid):  
-    email = request.args["email"]
-    cursor = conn.cursor()    
-    cursor.execute(f"Update dbo.Accounts Set Email = ? where AccountID = ?", email, accountid)
-    cursor.close()
+    try:
+        email = request.args["email"]
+        cursor = conn.cursor()    
+        cursor.execute(f"Update dbo.Accounts Set Email = ? where AccountID = ?", email, accountid)
+    except Exception as e:
+        print(e)
+    cursor.close()    
     return "success"
     
 @app.route("/api/updateaccountjson/<accountid>", methods = ['POST'])
 def updateAccountJson(accountid):  
-    data = request.get_json()
-    email = data.get('email', '')
-    cursor = conn.cursor()    
-    cursor.execute(f"Update dbo.Accounts Set Email = ? where AccountID = ?", email, accountid)
-    cursor.close()
+    try:
+        data = request.get_json()
+        email = data.get('email', '')
+        cursor = conn.cursor()    
+        cursor.execute(f"Update dbo.Accounts Set Email = ? where AccountID = ?", email, accountid)   
+    except Exception as e:
+        print(e)        
+    cursor.close()     
     return "success"
 
 # Setup Flask Restful framework
