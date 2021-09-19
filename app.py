@@ -60,10 +60,6 @@ def getAccounts():
 def get_data():
     return app.send_static_file("data.json")
 
-@app.route("/api/genericAccounts")
-def get_generic_accounts():
-    return getGenericAccounts()
-
 # Setup Flask Restful framework
 api = Api(app)
 parser = reqparse.RequestParser()

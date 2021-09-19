@@ -11,18 +11,6 @@ db_connection_string = f'DRIVER={driver};SERVER=tcp:eon-sb.database.windows.net,
 # Create connection to Azure SQL
 conn = pyodbc.connect(db_connection_string)
 
-def getGenericAccounts(self, account_id, email):     
-    self.accountid = account_id
-    self.email = email
-    # account = {"AccountId": account_id}
-    cursor = conn.cursor()    
-    cursor.execute(f"Select * from dbo.Accounts where AccountID = ?", account_id)
-    result = cursor.fetchone()  
-    account_response = {'AccountId':result[0], 'Email':result[3]}
-
-    cursor.close()
-    return account_response, 200
-
 # Customer Class    
 class Account(Resource):
     def get(self, account_id):     
