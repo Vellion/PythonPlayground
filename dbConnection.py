@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Resource
 import pyodbc
 import jsonpickle
+import csv
 
 driver = 'ODBC Driver 17 for SQL Server'
 db_connection_string = f'DRIVER={driver};SERVER=tcp:eon-sb.database.windows.net,1433;' \
@@ -35,4 +36,23 @@ class Accounts(Resource):
             self.accounts.append({'AccountId':account[0], 'Email':account[3]})
         return jsonpickle.encode(self)
 
+class Hotels(Resource):
+    def get(self):
+        with open('eng_playbook_hotels.csv', newline='') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            index = 0
+            for row in spamreader:
+                if (index == 0):
+                    index = index + 1
+                else:                   
 
+                    cursor = conn.cursor()    
+                    cursor.execute(f"insert into hotels values (?, ?, ?)"
+                    # cursor.execute(f"if not exists (select 1 from hotels where id = ?) " \
+                    #                 "begin " \
+                    #                     "insert into hotels values (?, ?, ?) " \
+                    #                 "end "
+                                        , row[0], row[1], row[2])
+                    cursor.commit()
+                    cursor.close()
+                    index = index + 1

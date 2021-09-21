@@ -82,6 +82,42 @@ def updateAccountJson(accountid):
     cursor.close()     
     return "success"
 
+
+
+@app.route("/api/hotels")
+def searchByName():  
+    try:
+        partialname = request.args["partialname"]
+        cursor = conn.cursor()    
+        cursor.execute(f"select * from hotels where name like '%{partialname}%' order by city ")   
+        database_results = cursor.fetchall()        
+        hotel_responses =  []   
+        cursor.close()   
+        hotelCounter = 0
+        for hotelfromdatabase in database_results:
+            #search through hotel responses if the city is greater then 2 do not insert, otherwise insert.
+            if (hotel_responses.count < 3):
+                hotel_responses.append({'id':hotelfromdatabase[0], 'name':hotelfromdatabase[1], 'city':hotelfromdatabase[2]})
+            if (hotel_responses.count > 10):
+                break
+
+            for hotelresponse in hotel_responses:
+                if (hotelCounter > 2):
+                    break
+                else:
+                    if hotelresponse[2] == hotelfromdatabase[2]:
+                        hotelCounter = hotelCounter + 1
+                        hotel_responses.append({'id':hotelfromdatabase[0], 'name':hotelfromdatabase[1], 'city':hotelfromdatabase[2]})
+            
+        return jsonpickle.encode(hotel_responses)
+    except Exception as e:
+        print(e)        
+    cursor.close()     
+    return "failed"
+
+
+
+
 # Setup Flask Restful framework
 api = Api(app)
 parser = reqparse.RequestParser()
@@ -90,3 +126,5 @@ parser.add_argument('Accounts')
 # Create API route to defined Customer class
 api.add_resource(Accounts, '/api/accounts')
 api.add_resource(Account, '/api/account', '/api/account/<account_id>')
+
+api.add_resource(Hotels, '/api/hotels')
